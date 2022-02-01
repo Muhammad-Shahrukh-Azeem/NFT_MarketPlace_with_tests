@@ -10,6 +10,7 @@ import "@nomiclabs/hardhat-etherscan";
 import "solidity-coverage";
 
 const INFURA_API_KEY = process.env.INFURA_API_KEY;
+const RINKEBY_PRIVATE_KEY0 = process.env.RINKEBY_PRIVATE_KEY0;
 const RINKEBY_PRIVATE_KEY = process.env.RINKEBY_PRIVATE_KEY!;
 const ETHERSCAN_API_KEY = process.env.ETHERSCAN_API_KEY;
 
@@ -30,7 +31,7 @@ const config: HardhatUserConfig = {
     localhost: {},
     rinkeby: {
       url: `https://rinkeby.infura.io/v3/${INFURA_API_KEY}`,
-      accounts: [RINKEBY_PRIVATE_KEY],
+      accounts: [RINKEBY_PRIVATE_KEY0, RINKEBY_PRIVATE_KEY],
       gas: 2000000,
     },
     coverage: {

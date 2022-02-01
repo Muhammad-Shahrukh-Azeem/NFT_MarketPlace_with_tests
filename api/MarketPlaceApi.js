@@ -25,36 +25,35 @@ app.use(express.json());
 
 //Connecting to local DataBase.
 
+const INFURA_API_KEY = process.env.INFURA_API_KEY;
 
 mongoose.connect(process.env.DATABASE_URL);
 const db = mongoose.connection;
 db.on('error', (error) => console.log(error));
 db.once('open', () => console.log('Connection to DataBase has been established.'));
-console.log("My address is : ",walletMnemonic.address);
+// console.log("My address is : ", walletMnemonic.address);
 
 
 main();
 async function main() {
     //Getting predefined values instead of using metamask for now.
-    const provider = await new ethers.providers.JsonRpcProvider();
+    const provider = await new ethers.providers.JsonRpcProvider(`https://rinkeby.infura.io/v3/${INFURA_API_KEY}`);
     const testuser1 = await provider.getSigner(0);
     const testuser2 = await provider.getSigner(1);
-    const testuser3 = await provider.getSigner(2);
-
 
     // Account #0: 0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266 (10000 ETH)
     // Private Key: 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
-    
+
     // Account #1: 0x70997970c51812dc3a010c7d01b50e0d17dc79c8 (10000 ETH)
     // Private Key: 0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d
-    
+
     // Account #2: 0x3c44cdddb6a900fa2b585dd299e03d12fa4293bc (10000 ETH)
     // Private Key: 0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a
 
-    const marketAddress = '0x59E563beB3a22f998F52aE2Aebb12c1Ad69D3995';
+    const marketAddress = '0x1fe83A61ae28bCd9B4599bA2FaA8Ea4CE6bF86f6';
     const market = new ethers.Contract(marketAddress, MarketPlaceArtifacts.abi, testuser1);
 
-    const cryptoBanana = '0xd58dA3cDE6ab331329cc6e2AfcDdae9a51275BD3';
+    const cryptoBanana = '0x62fE70e1C08B5dB42eA9d5E68f7ceD3d1BEC8c95';
     const banana = new ethers.Contract(cryptoBanana, ERC721Artifacts.abi, testuser2);
 
     app.get('/', async (req, res) => {
@@ -68,12 +67,7 @@ async function main() {
 
     app.post('/approve', async (req, res) => {
         try {
-            // const approving = await banana.connect(testuser1).approve(marketAddress, req.body.tokenId);
-            // const approve = new Approve({
-            //     tokenAddress: cryptoBanana,
-            //     tokenId: req.body.tokenId,
-            //     tokenOwner: req.body.tokenOwner
-            // });
+            await banana.connect(testuser1).approve(marketAddress, req.body.tokenId);
             const approve = new Approve({
                 tokenAddress: req.body.tokenAddress,
                 tokenId: req.body.tokenId,
@@ -88,7 +82,7 @@ async function main() {
             }
         }
         catch (error) {
-            res.json({message: error.message});
+            res.json({ message: error.message });
         }
     });
 
@@ -104,7 +98,7 @@ async function main() {
     app.post('/enlist', async (req, res) => {
         try {
             const enlisted = await market.connect(testuser1).enlist(req.body._nftAddress, req.body._nftId, req.body._price, {
-                value: ethers.utils.parseUnits('0.2', 'ether')
+                value: ethers.utils.parseUnits(req.body.value, 'ether')
             });
             const enlist = new Enlist({
                 nftAddress: req.body._nftAddress,
@@ -149,23 +143,23 @@ async function main() {
     });
 
     //wind up this function
-    app.post('/purchase', async (req,res) => {
-        const purchase;
-        await market.connect(testuser1).purchase(req.body._nftAddress, req.body._buyer, req.body._price, req.body._nftId);
+    app.post('/purchase', async (req, res) => {
+        await market.connect(testuser1).purchase(req.body._nftAddress, req.body._buyer, req.body._nftId, {
+            value: ethers.utils.parseUnits(req.body.value, "ether")
+        });
         try {
-            purchase = new Purchase({
+            const purchase = new Purchase({
                 nftAddress: req.body._nftAddress,
                 buyer: req.body._buyer,
-                price: req.body._price,
                 nftId: req.body._nftId
             });
+            try {
+                const purchased = await purchase.save();
+            } catch (error) {
+                res.status(404).json({ error: error.message });
+            }
         } catch (error) {
-            res.status(400).json({error: error.message});
-        }
-        try {
-            const purchased = await purchase.save();
-        } catch (error) {
-            res.status(404).json({error: error.message});
+            res.status(400).json({ error: error.message });
         }
     });
 

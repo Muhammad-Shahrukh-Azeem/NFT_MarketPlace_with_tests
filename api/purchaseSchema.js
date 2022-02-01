@@ -9,10 +9,6 @@ const purchaseSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    _price : {
-        type: String,
-        required: true
-    },
     _nftId : {
         type: String,
         required: true
