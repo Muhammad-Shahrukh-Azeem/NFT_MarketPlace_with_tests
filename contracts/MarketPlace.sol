@@ -40,8 +40,9 @@ contract MarketPlace is IERC721Receiver{
         IERC721 newNFT = IERC721(_nftAddress);
         require(newNFT.ownerOf(_nftId) == msg.sender, "Invalid address of owner of NFT.");
         contractBalance += 0.2 ether;
+        uint newPrice = _price * 1 ether;
         newNFT.safeTransferFrom(msg.sender ,address(this), _nftId);
-        enlistedNft[_nftAddress][_nftId] = nftData(msg.sender, _nftAddress, _nftId, _price, true);
+        enlistedNft[_nftAddress][_nftId] = nftData(msg.sender, _nftAddress, _nftId, newPrice, true);
         emit enlisted(_nftAddress,_nftId);
     }
 
@@ -61,22 +62,21 @@ contract MarketPlace is IERC721Receiver{
     //     emit valuePaid(seller,_price);
     // }
 
-    function purchase(address _nftAddress, address payable _buyer, uint _price, uint _nftId ) public payable {
-        _price = msg.value;
+    function purchase(address _nftAddress, address payable _buyer, uint _nftId) public payable {
         require(enlistedNft[_nftAddress][_nftId].exists == true,"This token does not exists in this market place.");
-        require(enlistedNft[_nftAddress][_nftId].price == _price,"Invalid price.");
+        require(enlistedNft[_nftAddress][_nftId].price == msg.value,"Invalid price.");
         IERC721 newNFT = IERC721(_nftAddress);
-        (bool sucess, ) = payable(address(this)).call{value: _price}("");
-        require(sucess, "Transaction failed.");
-        contractBalance += _price;
-        emit valueReceived(_buyer, _price);
+        (bool sucess, ) = payable(address(this)).call{value: msg.value}("");
+        require(sucess, "Transaction to market place failed.");
+        contractBalance += msg.value; 
+        emit valueReceived(_buyer, msg.value);
         // payable(_buyer).transfer(_price);
         newNFT.safeTransferFrom(address(this), _buyer, _nftId);
         address payable seller = payable(enlistedNft[_nftAddress][_nftId].nftOwner);
-         (sucess, ) = seller.call{value: _price}("");
-        require(sucess,"Transaction failed.");
-        contractBalance -= _price;
-        emit valuePaid(seller,_price);
+        (sucess, ) = seller.call{value: msg.value}("");
+        require(sucess,"Transaction to seller failed.");
+        contractBalance -= msg.value;
+        emit valuePaid(seller,msg.value);
         delete enlistedNft[_nftAddress][_nftId];
         emit nftPurchased(_nftAddress, _nftId, _buyer);
     }

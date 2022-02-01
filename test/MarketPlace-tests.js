@@ -126,14 +126,14 @@ describe("Writting tests for NFT_MarketPlace", () => {
             await marketPlace.connect(testAccount1).enlist(banana.address, 10, 40, {
                 value: ethers.utils.parseUnits("0.2", "ether")
             });
-            await expect(marketPlace.connect(testAccount2).purchase(banana.address, testAccount2.address, 40, 10, {
-                value: 30
+            await expect(marketPlace.connect(testAccount2).purchase(banana.address, testAccount2.address, 10, {
+                value: ethers.utils.parseUnits("30", "ether")
             })).to.be.revertedWith("Invalid price.");
         });
 
         it("Should check that NFT doesn't exists.", async function () {
-            await expect(marketPlace.connect(testAccount1).purchase(banana.address, testAccount2.address, 40, 10, {
-                value: 40
+            await expect(marketPlace.connect(testAccount1).purchase(banana.address, testAccount2.address, 10, {
+                value: ethers.utils.parseUnits("40", "ether")
             })).to.be.revertedWith("This token does not exists in this market place.");
         });
 
@@ -143,8 +143,8 @@ describe("Writting tests for NFT_MarketPlace", () => {
                 value: ethers.utils.parseUnits("0.2", "ether")
             });
             const balanceBefore = await marketPlace.getContractBalance();
-            await marketPlace.connect(testAccount2).purchase(banana.address, testAccount2.address, 40, 10, {
-                value : 40
+            await marketPlace.connect(testAccount2).purchase(banana.address, testAccount2.address, 10, {
+                value: ethers.utils.parseUnits("40", "ether")
             });
             const balanceAfter = await marketPlace.getContractBalance();
             expect(balanceBefore).to.equal(balanceAfter);
@@ -155,8 +155,8 @@ describe("Writting tests for NFT_MarketPlace", () => {
             await marketPlace.connect(testAccount1).enlist(banana.address, 10, 40, {
                 value: ethers.utils.parseUnits("0.2", "ether")
             });
-            await expect(marketPlace.connect(testAccount2).purchase(banana.address, testAccount2.address, 40, 10, {
-                value : 40
+            await expect(marketPlace.connect(testAccount2).purchase(banana.address, testAccount2.address, 10, {
+                value: ethers.utils.parseUnits("40", "ether")
             })).to.emit(marketPlace,'nftPurchased').withArgs(banana.address, 10, testAccount2.address);
         });
 
