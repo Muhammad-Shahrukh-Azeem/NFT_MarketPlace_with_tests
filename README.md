@@ -1,15 +1,9 @@
-# Basic Sample Hardhat Project
+# Hardhat Project ERC721_NFT_MarketPlace<br>
+This project has a enlist, delist and purchase function for a NFT MarketPlace.<br>
+The contract has been deployed to addresses.<br><br>
+Crypto Banana Deployed to :  0xd58dA3cDE6ab331329cc6e2AfcDdae9a51275BD3<br>
+Crypto Monkey Deployed to :  0x8b323B34CaD9DE49f202B536d9AA48e169a5654d<br>
+NFT MarketPlace Deployed to :  0x59E563beB3a22f998F52aE2Aebb12c1Ad69D3995 <br><br>
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
-
-Try running some of the following tasks:
-
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+The Instances have been made in the scripts to be interacted with.<br>
+Each functionality have been tested in the test directory.<br>
