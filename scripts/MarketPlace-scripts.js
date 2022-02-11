@@ -1,6 +1,10 @@
 const hre = require("hardhat");
 const ethers = hre.ethers;
 
+// new ethers.Wallet(process.env.RINKEBY_PRIVATE_KEY0);
+const myWallet  = ethers.Wallet.fromMnemonic( process.env.mnemonic);
+
+
 async function main() {
 
     const accounts = await hre.ethers.getSigners();
@@ -10,6 +14,11 @@ async function main() {
     testOwner = '0x743c9E764b788C8e21fF70108Ee1C34a5d713E60';
     testAccount1 = '0x2D751a936E6f59CaF65097E2a8E737ccf9eA25de';
     testAccount2 = '0x8101E668E68804b703DF59dfEb1262c47bEc2acd';
+
+
+    console.log("My account is : ", myWallet.address);
+  
+
     // [testOwner, testAccount1, testAccount2, a4 ,a5, a6] = await ethers.getSigners();
     await hre.run("compile");
     const cryptoBanana = await ethers.getContractFactory("TestNFT1");
@@ -18,7 +27,8 @@ async function main() {
     // console.log("Crypto Banana Deployed to : ", banana.address);
     const CryptoBanana = new ethers.Contract(contract_cryptoBanana, cryptoBanana.interface, accounts[0]);
 
-    // await banana.mintNFT(testOwner, 10);
+    // await CryptoBanana.mintNFT(myWallet.address, 90);
+    // console.log("Minted to My wallet....");
     // await banana.mintNFT(testAccount1, 20);
     // await banana.mintNFT(testAccount2, 30);
     
